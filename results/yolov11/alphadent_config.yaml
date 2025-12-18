@@ -1,0 +1,15 @@
+names:
+- Abrasion
+- Filling
+- Crown
+- Caries Class 1
+- Caries Class 2
+- Caries Class 3
+- Caries Class 4
+- Caries Class 5
+- Caries Class 6
+nc: 9
+path: /Users/brijeshnanda/projects/alpha-dent-slicing-aided-training/data
+test: images/test
+train: images/train
+val: images/valid

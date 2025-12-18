@@ -7,6 +7,7 @@ from shapely.validation import make_valid
 from shapely.affinity import translate
 import glob
 import sys
+import argparse
 
 # --- Helper Functions ---
 
@@ -160,21 +161,29 @@ def generate_multiset_crops(
 
 # --- Execution Block ---
 
-W, H = 2560, 2560
-
-OFFSET_SETS = [
-    (0, 0),         
-    (int(W/2), int(H/2)), 
-]
-
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-BASE_PATH = os.path.join(SCRIPT_DIR, "../data/alpha-dent/AlphaDent")
+BASE_PATH = os.path.join(SCRIPT_DIR, "data")
 
 if __name__ == "__main__":
-    if len(sys.argv) > 1:
-        BASE_PATH = sys.argv[1]
-
+    parser = argparse.ArgumentParser(description="Crop images with YOLO annotations")
+    parser.add_argument("--base-path", type=str, default=os.path.join(SCRIPT_DIR, "data"),
+                        help="Base path for input data")
+    parser.add_argument("--output-path", type=str, default=os.path.join(SCRIPT_DIR, "data_640"),
+                        help="Output path for cropped data")
+    parser.add_argument("--tile-width", type=int, default=640, help="Width of the tiles")
+    parser.add_argument("--tile-height", type=int, default=640, help="Height of the tiles")
+    
+    args = parser.parse_args()
+    BASE_PATH = args.base_path
+    OUTPUT_PATH = args.output_path
+    W = int(args.tile_width)
+    H = int(args.tile_height)
     SPLITS = ['train', 'valid', 'test']
+    
+    OFFSET_SETS = [
+        (0, 0),         
+        (int(W/2), int(H/2)), 
+    ]
     
     for split in SPLITS:
         print(f"\nProcessing split: {split}")
@@ -185,8 +194,8 @@ if __name__ == "__main__":
             print(f"  Skipping {split} (directory not found: {input_img_dir})")
             continue
             
-        out_img_dir = os.path.join(BASE_PATH, "cropped_images", f"{split}2560")
-        out_lbl_dir = os.path.join(BASE_PATH, "cropped_labels", f"{split}2560")
+        out_img_dir = os.path.join(OUTPUT_PATH, "images", split)
+        out_lbl_dir = os.path.join(OUTPUT_PATH, "labels", split)
 
         os.makedirs(out_img_dir, exist_ok=True)
         os.makedirs(out_lbl_dir, exist_ok=True)
